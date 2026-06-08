@@ -1,0 +1,162 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+}
+
+.header {
+  padding: $spacing-lg $page-padding;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  margin-bottom: $spacing-md;
+}
+
+.pageTitle {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  margin-bottom: $spacing-md;
+}
+
+.dateSelector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-lg;
+  padding: $spacing-sm;
+}
+
+.dateNav {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 36rpx;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.92);
+    background: rgba(255, 255, 255, 1);
+  }
+}
+
+.dateNavIcon {
+  font-size: $font-size-lg;
+  color: $color-primary;
+}
+
+.dateDisplay {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.currentDate {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.weekday {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4rpx;
+}
+
+.timelineContainer {
+  padding: 0 $page-padding;
+}
+
+.timeSection {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  padding-left: $spacing-xs;
+}
+
+.sectionIcon {
+  font-size: 36rpx;
+  margin-right: $spacing-sm;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  flex: 1;
+}
+
+.sectionCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  background: $color-bg-card;
+  padding: 4rpx $spacing-sm;
+  border-radius: $radius-sm;
+}
+
+.emptySlot {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  text-align: center;
+  border: 2rpx dashed $color-border;
+}
+
+.emptySlotText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.conflictBanner {
+  display: flex;
+  align-items: center;
+  background: rgba(245, 63, 63, 0.1);
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.conflictIcon {
+  font-size: $font-size-lg;
+  margin-right: $spacing-sm;
+}
+
+.conflictText {
+  font-size: $font-size-sm;
+  color: $color-error;
+  font-weight: $font-weight-medium;
+}
+
+.fab {
+  position: fixed;
+  right: $page-padding;
+  bottom: 180rpx;
+  width: 112rpx;
+  height: 112rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  border-radius: 56rpx;
+  box-shadow: 0 8rpx 32rpx rgba(255, 122, 69, 0.4);
+  z-index: 100;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.fabIcon {
+  font-size: 48rpx;
+  color: $color-text-white;
+  font-weight: $font-weight-bold;
+}

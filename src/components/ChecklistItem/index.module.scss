@@ -1,0 +1,98 @@
+@use '@/styles/variables.scss' as *;
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-sm;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.checked {
+    opacity: 0.6;
+
+    .name {
+      text-decoration: line-through;
+      color: $color-text-tertiary;
+    }
+  }
+}
+
+.checkbox {
+  width: 44rpx;
+  height: 44rpx;
+  border: 3rpx solid #d0d0d0;
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all $transition-base;
+  background: $color-bg-card;
+}
+
+.checkmark {
+  font-size: $font-size-md;
+  color: $color-success;
+  font-weight: $font-weight-bold;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.mainInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: 4rpx;
+}
+
+.name {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  @include text-ellipsis;
+}
+
+.quantity {
+  padding: 2rpx $spacing-xs;
+  background: $color-bg-hover;
+  border-radius: $radius-xs;
+}
+
+.quantityText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.note {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  @include text-ellipsis;
+}
+
+.deleteBtn {
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(245, 63, 63, 0.1);
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+
+  &:active {
+    background: rgba(245, 63, 63, 0.2);
+  }
+}
+
+.deleteText {
+  font-size: $font-size-xs;
+  color: $color-error;
+}

@@ -1,0 +1,126 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  display: flex;
+  gap: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-sm;
+  box-shadow: $shadow-card;
+  border-left: 6rpx solid $color-primary;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.conflict {
+    border-left-color: $color-error;
+    background: rgba(245, 63, 63, 0.03);
+  }
+}
+
+.timeSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100rpx;
+}
+
+.time {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  white-space: nowrap;
+}
+
+.timeLine {
+  flex: 1;
+  width: 4rpx;
+  background: linear-gradient(180deg, $color-primary 0%, $color-primary-light 100%);
+  margin: $spacing-xs 0;
+  min-height: 40rpx;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+  margin-right: $spacing-sm;
+}
+
+.deleteBtn {
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(245, 63, 63, 0.1);
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+
+  &:active {
+    background: rgba(245, 63, 63, 0.2);
+  }
+}
+
+.deleteText {
+  font-size: $font-size-xs;
+  color: $color-error;
+}
+
+.description {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-xs;
+  @include text-ellipsis-multi(2);
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: $spacing-xs;
+}
+
+.locationIcon {
+  font-size: $font-size-sm;
+}
+
+.locationText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  @include text-ellipsis;
+}
+
+.conflictWarning {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: $spacing-sm;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(245, 63, 63, 0.1);
+  border-radius: $radius-sm;
+}
+
+.warningIcon {
+  font-size: $font-size-sm;
+}
+
+.warningText {
+  font-size: $font-size-xs;
+  color: $color-error;
+  font-weight: $font-weight-medium;
+}

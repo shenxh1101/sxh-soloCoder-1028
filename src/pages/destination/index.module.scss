@@ -1,0 +1,146 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+}
+
+.header {
+  padding: $spacing-lg $page-padding $spacing-md;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  margin-bottom: $spacing-md;
+}
+
+.pageTitle {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  margin-bottom: $spacing-md;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  height: 72rpx;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 36rpx;
+  padding: 0 $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.searchIcon {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  margin-right: $spacing-sm;
+}
+
+.searchInput {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.categoryTabs {
+  padding: 0 $page-padding;
+  margin-bottom: $spacing-md;
+  @include scroll-x-container;
+  white-space: nowrap;
+}
+
+.tabItem {
+  @include scroll-x-item(auto);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 64rpx;
+  padding: 0 $spacing-xl;
+  border-radius: 32rpx;
+  background: $color-bg-card;
+  margin-right: $spacing-sm;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &.active {
+    background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+    box-shadow: 0 4rpx 16rpx rgba(255, 122, 69, 0.3);
+
+    .tabText {
+      color: $color-text-white;
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.tabIcon {
+  margin-right: $spacing-xs;
+  font-size: $font-size-md;
+}
+
+.tabText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.listContainer {
+  padding: 0 $page-padding;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx $page-padding;
+}
+
+.emptyIcon {
+  font-size: 120rpx;
+  margin-bottom: $spacing-md;
+}
+
+.emptyTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.emptyDesc {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  text-align: center;
+}
+
+.fab {
+  position: fixed;
+  right: $page-padding;
+  bottom: 180rpx;
+  width: 112rpx;
+  height: 112rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  border-radius: 56rpx;
+  box-shadow: 0 8rpx 32rpx rgba(255, 122, 69, 0.4);
+  z-index: 100;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.fabIcon {
+  font-size: 48rpx;
+  color: $color-text-white;
+  font-weight: $font-weight-bold;
+}

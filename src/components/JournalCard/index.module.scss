@@ -1,0 +1,131 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.imageScroll {
+  width: 100%;
+  @include scroll-x-container;
+}
+
+.image {
+  @include scroll-x-item(500rpx);
+  height: 300rpx;
+  margin-right: 4rpx;
+  background: $color-bg-hover;
+}
+
+.content {
+  padding: $spacing-lg;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+}
+
+.dateSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.date {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.weather {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.mood {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.deleteBtn {
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(245, 63, 63, 0.1);
+  border-radius: $radius-sm;
+
+  &:active {
+    background: rgba(245, 63, 63, 0.2);
+  }
+}
+
+.deleteText {
+  font-size: $font-size-xs;
+  color: $color-error;
+}
+
+.title {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.contentText {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  @include text-ellipsis-multi(3);
+  margin-bottom: $spacing-md;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex: 1;
+}
+
+.locationIcon {
+  font-size: $font-size-sm;
+}
+
+.locationText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  @include text-ellipsis;
+}
+
+.rating {
+  display: flex;
+  gap: 4rpx;
+}
+
+.starFilled {
+  font-size: $font-size-sm;
+  color: #ff9500;
+}
+
+.starEmpty {
+  font-size: $font-size-sm;
+  color: #e0e0e0;
+}

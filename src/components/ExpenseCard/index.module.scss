@@ -1,0 +1,127 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  display: flex;
+  gap: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-sm;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.icon {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  border-radius: $radius-md;
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.description {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+  margin-right: $spacing-md;
+}
+
+.amount {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  white-space: nowrap;
+}
+
+.meta {
+  display: flex;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-sm;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+}
+
+.label {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.value {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.splitInfo {
+  padding-top: $spacing-sm;
+  border-top: 1rpx solid $color-divider;
+}
+
+.splitSection {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 4rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.paidBy {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.splitAmong {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.perPerson {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-left: $spacing-xs;
+}
+
+.deleteBtn {
+  align-self: flex-start;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(245, 63, 63, 0.1);
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+
+  &:active {
+    background: rgba(245, 63, 63, 0.2);
+  }
+}
+
+.deleteText {
+  font-size: $font-size-xs;
+  color: $color-error;
+}

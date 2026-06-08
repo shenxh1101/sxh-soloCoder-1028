@@ -1,0 +1,104 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: $shadow-card-hover;
+  }
+}
+
+.image {
+  width: 100%;
+  height: 320rpx;
+  background: $color-bg-hover;
+}
+
+.content {
+  padding: $spacing-lg;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+}
+
+.name {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+  margin-right: $spacing-md;
+}
+
+.deleteBtn {
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(245, 63, 63, 0.1);
+  border-radius: $radius-sm;
+
+  &:active {
+    background: rgba(245, 63, 63, 0.2);
+  }
+}
+
+.deleteText {
+  font-size: $font-size-sm;
+  color: $color-error;
+}
+
+.tags {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.categoryTag {
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+}
+
+.ratingTag {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(255, 149, 0, 0.1);
+  border-radius: $radius-sm;
+}
+
+.star {
+  font-size: $font-size-sm;
+  color: #ff9500;
+}
+
+.ratingText {
+  font-size: $font-size-xs;
+  color: #ff9500;
+  font-weight: $font-weight-medium;
+}
+
+.address {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-xs;
+  @include text-ellipsis;
+}
+
+.description {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  @include text-ellipsis-multi(2);
+}
