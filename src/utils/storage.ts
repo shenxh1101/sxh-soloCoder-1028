@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   BUDGET: 'travel_budget',
   CHECKLIST: 'travel_checklist',
   JOURNALS: 'travel_journals',
+  TRIP_MEMBERS: 'travel_members',
   HAS_DATA: 'travel_has_data',
   CURRENT_CURRENCY: 'travel_currency'
 }

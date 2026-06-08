@@ -19,6 +19,7 @@ interface TravelState {
   budget: Budget
   checklist: ChecklistItem[]
   journals: JournalEntry[]
+  tripMembers: string[]
   selectedPlaceCategory: PlaceCategory
   selectedDate: string
   displayCurrency: Currency
@@ -61,6 +62,9 @@ interface TravelState {
   updateJournal: (id: string, updates: Partial<JournalEntry>) => void
   removeJournal: (id: string) => void
 
+  addTripMember: (name: string) => void
+  removeTripMember: (name: string) => void
+
   clearAllData: () => Promise<void>
 }
 
@@ -71,6 +75,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
   budget: { total: 10000, currency: 'CNY', spent: 0 },
   checklist: [],
   journals: [],
+  tripMembers: ['我', '同伴1', '同伴2', '同伴3'],
   selectedPlaceCategory: 'attraction',
   selectedDate: new Date().toISOString().split('T')[0],
   displayCurrency: 'CNY',
@@ -85,13 +90,14 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     console.log('[TravelStore] Has existing data:', hasData)
 
     if (hasData) {
-      const [places, itinerary, expenses, budget, checklist, journals, displayCurrency] = await Promise.all([
+      const [places, itinerary, expenses, budget, checklist, journals, tripMembers, displayCurrency] = await Promise.all([
         storage.get<Place[]>(STORAGE_KEYS.PLACES, []),
         storage.get<ItineraryItem[]>(STORAGE_KEYS.ITINERARY, []),
         storage.get<Expense[]>(STORAGE_KEYS.EXPENSES, []),
         storage.get<Budget>(STORAGE_KEYS.BUDGET, { total: 10000, currency: 'CNY', spent: 0 }),
         storage.get<ChecklistItem[]>(STORAGE_KEYS.CHECKLIST, []),
         storage.get<JournalEntry[]>(STORAGE_KEYS.JOURNALS, []),
+        storage.get<string[]>(STORAGE_KEYS.TRIP_MEMBERS, ['我', '同伴1', '同伴2', '同伴3']),
         storage.get<Currency>(STORAGE_KEYS.CURRENT_CURRENCY, 'CNY')
       ])
 
@@ -102,6 +108,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
         budget,
         checklist,
         journals,
+        tripMembers,
         displayCurrency,
         isInitialized: true,
         isLoading: false
@@ -139,6 +146,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
       storage.set(STORAGE_KEYS.BUDGET, state.budget),
       storage.set(STORAGE_KEYS.CHECKLIST, state.checklist),
       storage.set(STORAGE_KEYS.JOURNALS, state.journals),
+      storage.set(STORAGE_KEYS.TRIP_MEMBERS, state.tripMembers),
       storage.set(STORAGE_KEYS.CURRENT_CURRENCY, state.displayCurrency)
     ])
     console.log('[TravelStore] All data saved to storage')
@@ -335,6 +343,25 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     get().saveAll()
   },
 
+  addTripMember: (name) => {
+    console.log('[TravelStore] Adding trip member:', name)
+    set((state) => {
+      if (state.tripMembers.includes(name)) return state
+      return {
+        tripMembers: [...state.tripMembers, name]
+      }
+    })
+    get().saveAll()
+  },
+
+  removeTripMember: (name) => {
+    console.log('[TravelStore] Removing trip member:', name)
+    set((state) => ({
+      tripMembers: state.tripMembers.filter((m) => m !== name)
+    }))
+    get().saveAll()
+  },
+
   clearAllData: async () => {
     console.log('[TravelStore] Clearing all data')
     await Promise.all([
@@ -344,6 +371,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
       storage.remove(STORAGE_KEYS.BUDGET),
       storage.remove(STORAGE_KEYS.CHECKLIST),
       storage.remove(STORAGE_KEYS.JOURNALS),
+      storage.remove(STORAGE_KEYS.TRIP_MEMBERS),
       storage.remove(STORAGE_KEYS.HAS_DATA),
       storage.remove(STORAGE_KEYS.CURRENT_CURRENCY)
     ])
@@ -354,6 +382,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
       budget: { total: 10000, currency: 'CNY', spent: 0 },
       checklist: [],
       journals: [],
+      tripMembers: ['我', '同伴1', '同伴2', '同伴3'],
       isInitialized: false
     })
   }

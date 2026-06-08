@@ -50,6 +50,7 @@ const ItineraryPage: React.FC = () => {
   } = useTravelStore()
 
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showOverview, setShowOverview] = useState(true)
   const [editingItem, setEditingItem] = useState<ItineraryItem | null>(null)
   const [draggedItem, setDraggedItem] = useState<string | null>(null)
   const [formData, setFormData] = useState<FormData>({
@@ -61,11 +62,43 @@ const ItineraryPage: React.FC = () => {
     timeSlot: 'morning'
   })
 
+  interface DayOverview {
+    date: string
+    count: number
+    hasConflict: boolean
+    startTime: string
+    endTime: string
+  }
+
   React.useEffect(() => {
     if (selectedDate) {
       checkConflicts(selectedDate)
     }
   }, [selectedDate, checkConflicts])
+
+  const dayOverviews = useMemo((): DayOverview[] => {
+    const dateMap = new Map<string, DayOverview>()
+
+    itinerary.forEach((item) => {
+      const existing = dateMap.get(item.date)
+      if (existing) {
+        existing.count++
+        if (item.hasConflict) existing.hasConflict = true
+        if (item.startTime < existing.startTime) existing.startTime = item.startTime
+        if (item.endTime > existing.endTime) existing.endTime = item.endTime
+      } else {
+        dateMap.set(item.date, {
+          date: item.date,
+          count: 1,
+          hasConflict: item.hasConflict || false,
+          startTime: item.startTime,
+          endTime: item.endTime
+        })
+      }
+    })
+
+    return Array.from(dateMap.values()).sort((a, b) => a.date.localeCompare(b.date))
+  }, [itinerary])
 
   const currentDateObj = useMemo(() => dayjs(selectedDate), [selectedDate])
   const hasConflict = useMemo(

@@ -21,8 +21,6 @@ const expenseCategories = [
   { key: '其他', icon: '💰', color: '#95E1D3' }
 ]
 
-const defaultPeople = ['我', '同伴1', '同伴2', '同伴3']
-
 interface FormData {
   amount: string
   currency: Currency
@@ -34,7 +32,7 @@ interface FormData {
 }
 
 const AddExpensePage: React.FC = () => {
-  const { addExpense, displayCurrency } = useTravelStore()
+  const { addExpense, displayCurrency, tripMembers, addTripMember } = useTravelStore()
 
   const [formData, setFormData] = useState<FormData>({
     amount: '',
@@ -42,8 +40,8 @@ const AddExpensePage: React.FC = () => {
     category: '餐饮',
     description: '',
     date: new Date().toISOString().split('T')[0],
-    paidBy: '我',
-    splitAmong: ['我']
+    paidBy: tripMembers[0] || '我',
+    splitAmong: [tripMembers[0] || '我']
   })
 
   const [customPerson, setCustomPerson] = useState('')
@@ -54,9 +52,8 @@ const AddExpensePage: React.FC = () => {
   const perPerson = amountNum / splitCount
 
   const allPeople = useMemo(() => {
-    const all = [...new Set([...defaultPeople, ...formData.splitAmong, formData.paidBy])]
-    return showAllPeople ? all : all.slice(0, 6)
-  }, [formData.splitAmong, formData.paidBy, showAllPeople])
+    return showAllPeople ? tripMembers : tripMembers.slice(0, 6)
+  }, [tripMembers, showAllPeople])
 
   const updateForm = (key: keyof FormData, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }))
@@ -78,11 +75,13 @@ const AddExpensePage: React.FC = () => {
     if (!customPerson.trim()) return
     const person = customPerson.trim()
     
-    if (formData.splitAmong.includes(person)) {
+    if (tripMembers.includes(person)) {
       Taro.showToast({ title: '该成员已存在', icon: 'none' })
       setCustomPerson('')
       return
     }
+    
+    addTripMember(person)
     
     setFormData((prev) => ({
       ...prev,

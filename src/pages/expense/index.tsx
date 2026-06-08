@@ -23,6 +23,7 @@ const ExpensePage: React.FC = () => {
   const {
     expenses,
     budget,
+    tripMembers,
     displayCurrency,
     setDisplayCurrency,
     removeExpense
@@ -73,6 +74,43 @@ const ExpensePage: React.FC = () => {
     const totalInDisplay = expenses.reduce((sum, e) => sum + convertCurrency(e.amount, e.currency, displayCurrency), 0)
     return totalInDisplay / uniquePeople.length
   }, [expenses, displayCurrency])
+
+  interface PersonSettlement {
+    name: string
+    shouldPay: number
+    paid: number
+    net: number
+  }
+
+  const settlements = useMemo((): PersonSettlement[] => {
+    const allPeople = [...new Set([
+      ...tripMembers,
+      ...expenses.flatMap((e) => e.splitAmong),
+      ...expenses.map((e) => e.paidBy)
+    ])]
+
+    return allPeople.map((name) => {
+      let shouldPay = 0
+      let paid = 0
+
+      expenses.forEach((exp) => {
+        const amountInDisplay = convertCurrency(exp.amount, exp.currency, displayCurrency)
+        if (exp.paidBy === name) {
+          paid += amountInDisplay
+        }
+        if (exp.splitAmong.includes(name)) {
+          shouldPay += amountInDisplay / exp.splitAmong.length
+        }
+      })
+
+      return {
+        name,
+        shouldPay,
+        paid,
+        net: paid - shouldPay
+      }
+    }).sort((a, b) => b.net - a.net)
+  }, [expenses, tripMembers, displayCurrency])
 
   const handleCurrencyChange = (currency: Currency) => {
     console.log('[ExpensePage] Currency changed:', currency)
@@ -155,6 +193,33 @@ const ExpensePage: React.FC = () => {
               <Text className={styles.perPersonAmount}>
                 {formatCurrency(perPersonAmount, displayCurrency)}
               </Text>
+            </View>
+          )}
+
+          {settlements.length > 0 && (
+            <View className={styles.settlementSection}>
+              <Text className={styles.settlementTitle}>成员结算明细</Text>
+              {settlements.map((s) => (
+                <View key={s.name} className={styles.settlementRow}>
+                  <Text className={styles.settlementName}>{s.name}</Text>
+                  <View className={styles.settlementDetails}>
+                    <Text className={styles.settlementItem}>
+                      应付 {formatCurrency(s.shouldPay, displayCurrency)}
+                    </Text>
+                    <Text className={styles.settlementItem}>
+                      已付 {formatCurrency(s.paid, displayCurrency)}
+                    </Text>
+                    <Text className={classnames(
+                      styles.settlementNet,
+                      s.net > 0 && styles.netPositive,
+                      s.net < 0 && styles.netNegative
+                    )}>
+                      {s.net > 0 ? '应收 ' : s.net < 0 ? '应补 ' : ''}
+                      {formatCurrency(Math.abs(s.net), displayCurrency)}
+                    </Text>
+                  </View>
+                </View>
+              ))}
             </View>
           )}
         </View>
