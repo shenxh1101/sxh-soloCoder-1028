@@ -7,7 +7,7 @@ import { convertCurrency, formatCurrency } from '@/utils/currency'
 import dayjs from 'dayjs'
 
 const TripSummaryPage: React.FC = () => {
-  const { journals, expenses, places, displayCurrency } = useTravelStore()
+  const { journals, expenses, displayCurrency } = useTravelStore()
 
   const summary = useMemo(() => {
     if (journals.length === 0) {
@@ -31,10 +31,9 @@ const TripSummaryPage: React.FC = () => {
     const totalDays = dayjs(endDate).diff(dayjs(startDate), 'day') + 1
 
     const avgRating = journals.reduce((sum, j) => sum + j.rating, 0) / journals.length
-    const uniquePlaces = new Set([
-      ...journals.map((j) => j.location).filter(Boolean),
-      ...places.map((p) => p.name)
-    ]).size
+    const uniquePlaces = new Set(
+      journals.map((j) => j.location).filter(Boolean)
+    ).size
 
     const totalSpent = expenses.reduce((sum, e) => sum + convertCurrency(e.amount, e.currency, displayCurrency), 0)
 
@@ -42,7 +41,6 @@ const TripSummaryPage: React.FC = () => {
     const perPerson = allPeople.size > 0 ? totalSpent / allPeople.size : totalSpent
 
     const coverImage = journals.find((j) => j.images.length > 0)?.images[0]
-      || places.find((p) => p.image)?.image
       || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200'
 
     const title = `我的${dayjs(startDate).format('M月')}旅行`
@@ -59,7 +57,7 @@ const TripSummaryPage: React.FC = () => {
       coverImage,
       title
     }
-  }, [journals, expenses, places, displayCurrency])
+  }, [journals, expenses, displayCurrency])
 
   const shareText = useMemo(() => {
     if (journals.length === 0) return ''

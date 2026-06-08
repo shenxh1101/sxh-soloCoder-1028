@@ -39,7 +39,7 @@ const PlaceDetailPage: React.FC = () => {
   const router = useRouter()
   const placeId = router.params.id
 
-  const { places, updatePlace, removePlace } = useTravelStore()
+  const { places, updatePlace, removePlace, setPlaceCategory } = useTravelStore()
 
   const place = places.find((p) => p.id === placeId)
 
@@ -95,14 +95,18 @@ const PlaceDetailPage: React.FC = () => {
     }
 
     const ratingNum = parseFloat(formData.rating)
+    const newCategory = formData.category
+    
     updatePlace(place.id, {
-      category: formData.category,
+      category: newCategory,
       name: formData.name.trim(),
       address: formData.address.trim(),
       description: formData.description.trim(),
       rating: isNaN(ratingNum) ? 5 : Math.min(5, Math.max(1, ratingNum)),
-      image: formData.image.trim() || getDefaultImage(formData.category)
+      image: formData.image.trim() || getDefaultImage(newCategory)
     })
+    
+    setPlaceCategory(newCategory)
 
     Taro.showToast({ title: '保存成功', icon: 'success' })
     setIsEditing(false)

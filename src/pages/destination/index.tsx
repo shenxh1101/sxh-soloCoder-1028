@@ -112,15 +112,18 @@ const DestinationPage: React.FC = () => {
     }
 
     const ratingNum = parseFloat(formData.rating)
+    const newCategory = formData.category
+    
     addPlace({
-      category: formData.category,
+      category: newCategory,
       name: formData.name.trim(),
       address: formData.address.trim(),
       description: formData.description.trim(),
       rating: isNaN(ratingNum) ? 5 : Math.min(5, Math.max(1, ratingNum)),
-      image: formData.image.trim() || getDefaultImage(formData.category)
+      image: formData.image.trim() || getDefaultImage(newCategory)
     })
 
+    setPlaceCategory(newCategory)
     Taro.showToast({ title: '添加成功', icon: 'success' })
     setShowModal(false)
     setFormData(initialFormData)

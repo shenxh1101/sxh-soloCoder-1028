@@ -109,14 +109,12 @@ export const useTravelStore = create<TravelState>((set, get) => ({
       console.log('[TravelStore] Loaded from storage')
     } else if (mockData) {
       const initialBudget = mockData.budget || { total: 10000, currency: 'CNY', spent: 0 }
-      const initialExpenses = mockData.expenses || []
-      const calculatedSpent = initialExpenses.reduce((sum, e) => sum + e.amount, 0)
 
       set({
         places: mockData.places || [],
         itinerary: mockData.itinerary || [],
-        expenses: initialExpenses,
-        budget: { ...initialBudget, spent: calculatedSpent },
+        expenses: mockData.expenses || [],
+        budget: initialBudget,
         checklist: mockData.checklist || [],
         journals: mockData.journals || [],
         isInitialized: true,
@@ -243,7 +241,6 @@ export const useTravelStore = create<TravelState>((set, get) => ({
         if (item.date !== date) return item
         const hasConflict = dayItems.some((other) => {
           if (other.id === item.id) return false
-          if (other.timeSlot !== item.timeSlot) return false
           const start1 = item.startTime
           const end1 = item.endTime
           const start2 = other.startTime
@@ -259,24 +256,15 @@ export const useTravelStore = create<TravelState>((set, get) => ({
   addExpense: (expense) => {
     console.log('[TravelStore] Adding expense:', expense.description, expense.amount)
     set((state) => ({
-      expenses: [{ ...expense, id: `expense-${Date.now()}` }, ...state.expenses],
-      budget: {
-        ...state.budget,
-        spent: state.budget.spent + expense.amount
-      }
+      expenses: [{ ...expense, id: `expense-${Date.now()}` }, ...state.expenses]
     }))
     get().saveAll()
   },
 
   removeExpense: (id) => {
     console.log('[TravelStore] Removing expense:', id)
-    const expense = get().expenses.find((e) => e.id === id)
     set((state) => ({
-      expenses: state.expenses.filter((e) => e.id !== id),
-      budget: {
-        ...state.budget,
-        spent: expense ? state.budget.spent - expense.amount : state.budget.spent
-      }
+      expenses: state.expenses.filter((e) => e.id !== id)
     }))
     get().saveAll()
   },

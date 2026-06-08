@@ -28,11 +28,15 @@ const ExpensePage: React.FC = () => {
     removeExpense
   } = useTravelStore()
 
+  const totalSpent = useMemo(() => {
+    return expenses.reduce((sum, e) => sum + convertCurrency(e.amount, e.currency, displayCurrency), 0)
+  }, [expenses, displayCurrency])
+
   const convertedBudget = useMemo(() => ({
     ...budget,
     total: convertCurrency(budget.total, budget.currency, displayCurrency),
-    spent: convertCurrency(budget.spent, budget.currency, displayCurrency)
-  }), [budget, displayCurrency])
+    spent: totalSpent
+  }), [budget, displayCurrency, totalSpent])
 
   const remaining = convertedBudget.total - convertedBudget.spent
   const progressPercent = Math.min((convertedBudget.spent / convertedBudget.total) * 100, 100)

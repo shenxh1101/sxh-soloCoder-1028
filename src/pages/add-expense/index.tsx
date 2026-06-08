@@ -77,13 +77,20 @@ const AddExpensePage: React.FC = () => {
   const handleAddCustomPerson = () => {
     if (!customPerson.trim()) return
     const person = customPerson.trim()
-    if (!allPeople.includes(person)) {
-      updateForm('splitAmong', [...formData.splitAmong, person])
+    
+    if (formData.splitAmong.includes(person)) {
+      Taro.showToast({ title: '该成员已存在', icon: 'none' })
+      setCustomPerson('')
+      return
     }
-    if (!formData.splitAmong.includes(person)) {
-      handleTogglePerson(person)
-    }
+    
+    setFormData((prev) => ({
+      ...prev,
+      splitAmong: [...prev.splitAmong, person],
+      paidBy: prev.paidBy || person
+    }))
     setCustomPerson('')
+    Taro.showToast({ title: `已添加 ${person}`, icon: 'success' })
   }
 
   const handleSelectAll = () => {
