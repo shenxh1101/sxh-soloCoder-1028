@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { View, Text, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import classnames from 'classnames'
 import styles from './index.module.scss'
 import { useTravelStore } from '@/store/travelStore'
-import { mockExpenses, mockBudget } from '@/data/mockExpenses'
 import ExpenseCard from '@/components/ExpenseCard'
 import {
   convertCurrency,
@@ -24,38 +23,16 @@ const ExpensePage: React.FC = () => {
   const {
     expenses,
     budget,
-    addExpense,
-    removeExpense,
-    setBudget
+    displayCurrency,
+    setDisplayCurrency,
+    removeExpense
   } = useTravelStore()
-
-  const [isInitialized, setIsInitialized] = useState(false)
-  const [selectedCurrency, setSelectedCurrency] = useState<Currency>('CNY')
-
-  useEffect(() => {
-    if (!isInitialized && expenses.length === 0) {
-      console.log('[ExpensePage] Initializing with mock data')
-      setBudget(mockBudget.total, mockBudget.currency)
-      mockExpenses.forEach((expense) => {
-        addExpense({
-          amount: expense.amount,
-          currency: expense.currency,
-          category: expense.category,
-          description: expense.description,
-          date: expense.date,
-          splitAmong: expense.splitAmong,
-          paidBy: expense.paidBy
-        })
-      })
-      setIsInitialized(true)
-    }
-  }, [isInitialized, expenses.length, addExpense, setBudget])
 
   const convertedBudget = useMemo(() => ({
     ...budget,
-    total: convertCurrency(budget.total, budget.currency, selectedCurrency),
-    spent: convertCurrency(budget.spent, budget.currency, selectedCurrency)
-  }), [budget, selectedCurrency])
+    total: convertCurrency(budget.total, budget.currency, displayCurrency),
+    spent: convertCurrency(budget.spent, budget.currency, displayCurrency)
+  }), [budget, displayCurrency])
 
   const remaining = convertedBudget.total - convertedBudget.spent
   const progressPercent = Math.min((convertedBudget.spent / convertedBudget.total) * 100, 100)
@@ -67,25 +44,35 @@ const ExpensePage: React.FC = () => {
       住宿: { name: '住宿', icon: '🏨', total: 0 },
       餐饮: { name: '餐饮', icon: '🍜', total: 0 },
       门票: { name: '门票', icon: '🎫', total: 0 },
+      购物: { name: '购物', icon: '🛍️', total: 0 },
       其他: { name: '其他', icon: '💰', total: 0 }
     }
 
     expenses.forEach((exp) => {
       const category = stats[exp.category] ? exp.category : '其他'
-      const converted = convertCurrency(exp.amount, exp.currency, selectedCurrency)
+      const converted = convertCurrency(exp.amount, exp.currency, displayCurrency)
       stats[category].total += converted
     })
 
     return Object.values(stats).filter((s) => s.total > 0)
-  }, [expenses, selectedCurrency])
+  }, [expenses, displayCurrency])
 
   const sortedExpenses = useMemo(() => {
     return [...expenses].sort((a, b) => b.date.localeCompare(a.date))
   }, [expenses])
 
+  const perPersonAmount = useMemo(() => {
+    if (expenses.length === 0) return 0
+    const allSplit = expenses.flatMap((e) => e.splitAmong)
+    const uniquePeople = [...new Set(allSplit)]
+    if (uniquePeople.length === 0) return 0
+    const totalInDisplay = expenses.reduce((sum, e) => sum + convertCurrency(e.amount, e.currency, displayCurrency), 0)
+    return totalInDisplay / uniquePeople.length
+  }, [expenses, displayCurrency])
+
   const handleCurrencyChange = (currency: Currency) => {
     console.log('[ExpensePage] Currency changed:', currency)
-    setSelectedCurrency(currency)
+    setDisplayCurrency(currency)
   }
 
   const handleAddExpense = () => {
@@ -122,13 +109,13 @@ const ExpensePage: React.FC = () => {
             <View className={styles.spentSection}>
               <Text className={styles.spentLabel}>已花费</Text>
               <Text className={styles.spentAmount}>
-                {formatCurrency(convertedBudget.spent, selectedCurrency)}
+                {formatCurrency(convertedBudget.spent, displayCurrency)}
               </Text>
             </View>
             <View className={styles.budgetSection}>
               <Text className={styles.budgetLabel}>总预算</Text>
               <Text className={styles.budgetAmount}>
-                {formatCurrency(convertedBudget.total, selectedCurrency)}
+                {formatCurrency(convertedBudget.total, displayCurrency)}
               </Text>
             </View>
           </View>
@@ -144,7 +131,7 @@ const ExpensePage: React.FC = () => {
               )}
             >
               {isOverBudget ? '-' : ''}
-              {formatCurrency(Math.abs(remaining), selectedCurrency)}
+              {formatCurrency(Math.abs(remaining), displayCurrency)}
             </Text>
           </View>
 
@@ -157,6 +144,15 @@ const ExpensePage: React.FC = () => {
               style={{ width: `${progressPercent}%` }}
             />
           </View>
+
+          {perPersonAmount > 0 && (
+            <View className={styles.perPersonSection}>
+              <Text className={styles.perPersonLabel}>人均分摊</Text>
+              <Text className={styles.perPersonAmount}>
+                {formatCurrency(perPersonAmount, displayCurrency)}
+              </Text>
+            </View>
+          )}
         </View>
       </View>
 
@@ -170,7 +166,7 @@ const ExpensePage: React.FC = () => {
             key={currency}
             className={classnames(
               styles.currencyItem,
-              selectedCurrency === currency && styles.active
+              displayCurrency === currency && styles.active
             )}
             onClick={() => handleCurrencyChange(currency)}
           >
@@ -181,23 +177,14 @@ const ExpensePage: React.FC = () => {
         ))}
       </ScrollView>
 
-      <ScrollView
-        scrollY
-        refresherEnabled
-        onRefresherRefresh={() => {
-          console.log('[ExpensePage] Pull to refresh')
-          setTimeout(() => {
-            Taro.stopPullDownRefresh()
-          }, 1000)
-        }}
-      >
+      <ScrollView scrollY>
         <View className={styles.statsGrid}>
           {categoryStats.map((stat) => (
             <View key={stat.name} className={styles.statCard}>
               <Text className={styles.statIcon}>{stat.icon}</Text>
               <Text className={styles.statLabel}>{stat.name}</Text>
               <Text className={styles.statAmount}>
-                {formatCurrency(stat.total, selectedCurrency)}
+                {formatCurrency(stat.total, displayCurrency)}
               </Text>
             </View>
           ))}
@@ -215,8 +202,8 @@ const ExpensePage: React.FC = () => {
                 key={expense.id}
                 expense={{
                   ...expense,
-                  amount: convertCurrency(expense.amount, expense.currency, selectedCurrency),
-                  currency: selectedCurrency
+                  amount: convertCurrency(expense.amount, expense.currency, displayCurrency),
+                  currency: displayCurrency
                 }}
                 onDelete={handleDeleteExpense}
               />

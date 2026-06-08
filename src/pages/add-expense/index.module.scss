@@ -4,25 +4,375 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  background: $color-bg-page;
+}
+
+.scrollContainer {
+  flex: 1;
+}
+
+.amountSection {
+  padding: $spacing-xl $page-padding;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  text-align: center;
+}
+
+.amountRow {
+  display: flex;
+  align-items: baseline;
   justify-content: center;
-  padding: $page-padding;
+  margin-bottom: $spacing-sm;
 }
 
-.icon {
-  font-size: 120rpx;
-  margin-bottom: $spacing-lg;
+.currencySymbol {
+  font-size: 48rpx;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  margin-right: $spacing-sm;
 }
 
-.title {
-  font-size: $font-size-xxl;
+.amountInput {
+  font-size: 96rpx;
   font-weight: $font-weight-bold;
+  color: $color-text-white;
+  background: transparent;
+  border: none;
+  min-width: 200rpx;
+  text-align: center;
+}
+
+.amountPlaceholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.perPersonHint {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.formSection {
+  padding: $spacing-lg $page-padding;
+  border-bottom: 1rpx solid $color-border-light;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
   color: $color-text-primary;
   margin-bottom: $spacing-md;
 }
 
-.desc {
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.sectionActions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.actionText {
+  font-size: $font-size-sm;
+  color: $color-primary;
+}
+
+.actionDivider {
+  color: $color-border-light;
+}
+
+.currencyScroll {
+  @include scroll-x-container;
+  white-space: nowrap;
+}
+
+.currencyOption {
+  @include scroll-x-item(auto);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 120rpx;
+  height: 100rpx;
+  padding: 0 $spacing-md;
+  background: $color-bg-secondary;
+  border-radius: $radius-md;
+  margin-right: $spacing-sm;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+
+  &Active {
+    border-color: $color-primary;
+    background: rgba(255, 122, 69, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.currencyOptionSymbol {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.currencyOptionText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+}
+
+.categoryOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 120rpx;
+  background: $color-bg-secondary;
+  border-radius: $radius-md;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+
+  &Active {
+    border-color: $color-primary;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.categoryIcon {
+  font-size: 40rpx;
+  margin-bottom: $spacing-xs;
+}
+
+.categoryText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.formInput {
+  width: 100%;
+  height: 80rpx;
+  padding: 0 $spacing-md;
+  background: $color-bg-secondary;
+  border-radius: $radius-md;
   font-size: $font-size-md;
+  color: $color-text-primary;
+  border: none;
+  box-sizing: border-box;
+}
+
+.peopleScroll {
+  @include scroll-x-container;
+  white-space: nowrap;
+}
+
+.peopleOption {
+  @include scroll-x-item(auto);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 64rpx;
+  padding: 0 $spacing-lg;
+  background: $color-bg-secondary;
+  border-radius: 32rpx;
+  margin-right: $spacing-sm;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+
+  &Active {
+    border-color: $color-primary;
+    background: rgba(255, 122, 69, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.peopleText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.peopleGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.splitOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72rpx;
+  background: $color-bg-secondary;
+  border-radius: $radius-md;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+  gap: $spacing-xs;
+
+  &Active {
+    border-color: $color-primary;
+    background: rgba(255, 122, 69, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.addPersonOption {
+  border-style: dashed;
+  border-color: $color-border;
+}
+
+.splitCheckbox {
+  width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-xs;
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+}
+
+.splitAddIcon {
+  font-size: $font-size-lg;
   color: $color-text-tertiary;
-  text-align: center;
+}
+
+.splitText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.addPersonRow {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.addPersonInput {
+  flex: 1;
+  height: 72rpx;
+  padding: 0 $spacing-md;
+  background: $color-bg-secondary;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  border: none;
+  box-sizing: border-box;
+}
+
+.addPersonBtn {
+  height: 72rpx;
+  padding: 0 $spacing-xl;
+  background: $color-primary;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addPersonBtnText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.summaryCard {
+  margin: $spacing-lg $page-padding;
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.summaryTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+}
+
+.summaryLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.summaryValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.summaryValuePeople {
+  font-size: $font-size-xs;
+  color: $color-text-primary;
+  text-align: right;
+  max-width: 60%;
+}
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-top: 1rpx solid $color-border-light;
+  padding-bottom: calc($spacing-lg + env(safe-area-inset-bottom));
+}
+
+.btnCancel {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg-secondary;
+  border-radius: $radius-lg;
+}
+
+.btnCancelText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.btnSubmit {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  border-radius: $radius-lg;
+}
+
+.btnSubmitText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
 }

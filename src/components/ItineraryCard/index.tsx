@@ -7,25 +7,19 @@ import type { ItineraryItem } from '@/types/travel'
 interface ItineraryCardProps {
   item: ItineraryItem
   onDelete?: (id: string) => void
+  onEdit?: () => void
+  onLongPress?: () => void
 }
 
-const timeSlotLabels = {
-  morning: '上午',
-  afternoon: '下午',
-  evening: '晚上'
-}
-
-const ItineraryCard: React.FC<ItineraryCardProps> = ({ item, onDelete }) => {
+const ItineraryCard: React.FC<ItineraryCardProps> = ({ item, onDelete, onEdit, onLongPress }) => {
   const handleClick = () => {
-    console.log('[ItineraryCard] Clicked:', item.title)
-    Taro.navigateTo({
-      url: '/pages/itinerary-detail/index?id=' + item.id
-    })
+    if (onEdit) {
+      onEdit()
+    }
   }
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
-    console.log('[ItineraryCard] Delete:', item.id)
     if (onDelete) {
       onDelete(item.id)
     }
@@ -35,6 +29,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({ item, onDelete }) => {
     <View
       className={classnames(styles.card, item.hasConflict && styles.conflict)}
       onClick={handleClick}
+      onLongPress={onLongPress}
     >
       <View className={styles.timeSection}>
         <Text className={styles.time}>{item.startTime}</Text>
@@ -44,10 +39,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({ item, onDelete }) => {
       <View className={styles.content}>
         <View className={styles.header}>
           <Text className={styles.title}>{item.title}</Text>
-          <View
-            className={styles.deleteBtn}
-            onClick={handleDelete}
-          >
+          <View className={styles.deleteBtn} onClick={handleDelete}>
             <Text className={styles.deleteText}>删除</Text>
           </View>
         </View>

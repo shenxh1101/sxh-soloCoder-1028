@@ -10,6 +10,7 @@ import type {
   Currency,
   ChecklistCategory
 } from '@/types/travel'
+import { storage, STORAGE_KEYS } from '@/utils/storage'
 
 interface TravelState {
   places: Place[]
@@ -20,8 +21,23 @@ interface TravelState {
   journals: JournalEntry[]
   selectedPlaceCategory: PlaceCategory
   selectedDate: string
+  displayCurrency: Currency
+  isInitialized: boolean
+  isLoading: boolean
+
+  initialize: (mockData?: {
+    places?: Place[]
+    itinerary?: ItineraryItem[]
+    expenses?: Expense[]
+    budget?: Budget
+    checklist?: ChecklistItem[]
+    journals?: JournalEntry[]
+  }) => Promise<void>
+
+  saveAll: () => Promise<void>
 
   addPlace: (place: Omit<Place, 'id' | 'createdAt'>) => void
+  updatePlace: (id: string, updates: Partial<Place>) => void
   removePlace: (id: string) => void
   setPlaceCategory: (category: PlaceCategory) => void
 
@@ -35,13 +51,17 @@ interface TravelState {
   addExpense: (expense: Omit<Expense, 'id'>) => void
   removeExpense: (id: string) => void
   setBudget: (total: number, currency: Currency) => void
+  setDisplayCurrency: (currency: Currency) => void
 
   addChecklistItem: (item: Omit<ChecklistItem, 'id'>) => void
   removeChecklistItem: (id: string) => void
   toggleChecklistItem: (id: string) => void
 
   addJournal: (journal: Omit<JournalEntry, 'id'>) => void
+  updateJournal: (id: string, updates: Partial<JournalEntry>) => void
   removeJournal: (id: string) => void
+
+  clearAllData: () => Promise<void>
 }
 
 export const useTravelStore = create<TravelState>((set, get) => ({
@@ -53,19 +73,100 @@ export const useTravelStore = create<TravelState>((set, get) => ({
   journals: [],
   selectedPlaceCategory: 'attraction',
   selectedDate: new Date().toISOString().split('T')[0],
+  displayCurrency: 'CNY',
+  isInitialized: false,
+  isLoading: false,
+
+  initialize: async (mockData) => {
+    console.log('[TravelStore] Initializing...')
+    set({ isLoading: true })
+
+    const hasData = await storage.hasData()
+    console.log('[TravelStore] Has existing data:', hasData)
+
+    if (hasData) {
+      const [places, itinerary, expenses, budget, checklist, journals, displayCurrency] = await Promise.all([
+        storage.get<Place[]>(STORAGE_KEYS.PLACES, []),
+        storage.get<ItineraryItem[]>(STORAGE_KEYS.ITINERARY, []),
+        storage.get<Expense[]>(STORAGE_KEYS.EXPENSES, []),
+        storage.get<Budget>(STORAGE_KEYS.BUDGET, { total: 10000, currency: 'CNY', spent: 0 }),
+        storage.get<ChecklistItem[]>(STORAGE_KEYS.CHECKLIST, []),
+        storage.get<JournalEntry[]>(STORAGE_KEYS.JOURNALS, []),
+        storage.get<Currency>(STORAGE_KEYS.CURRENT_CURRENCY, 'CNY')
+      ])
+
+      set({
+        places,
+        itinerary,
+        expenses,
+        budget,
+        checklist,
+        journals,
+        displayCurrency,
+        isInitialized: true,
+        isLoading: false
+      })
+      console.log('[TravelStore] Loaded from storage')
+    } else if (mockData) {
+      const initialBudget = mockData.budget || { total: 10000, currency: 'CNY', spent: 0 }
+      const initialExpenses = mockData.expenses || []
+      const calculatedSpent = initialExpenses.reduce((sum, e) => sum + e.amount, 0)
+
+      set({
+        places: mockData.places || [],
+        itinerary: mockData.itinerary || [],
+        expenses: initialExpenses,
+        budget: { ...initialBudget, spent: calculatedSpent },
+        checklist: mockData.checklist || [],
+        journals: mockData.journals || [],
+        isInitialized: true,
+        isLoading: false
+      })
+
+      await get().saveAll()
+      await storage.setHasData(true)
+      console.log('[TravelStore] Initialized with mock data and saved')
+    } else {
+      set({ isInitialized: true, isLoading: false })
+      console.log('[TravelStore] Initialized empty')
+    }
+  },
+
+  saveAll: async () => {
+    const state = get()
+    await Promise.all([
+      storage.set(STORAGE_KEYS.PLACES, state.places),
+      storage.set(STORAGE_KEYS.ITINERARY, state.itinerary),
+      storage.set(STORAGE_KEYS.EXPENSES, state.expenses),
+      storage.set(STORAGE_KEYS.BUDGET, state.budget),
+      storage.set(STORAGE_KEYS.CHECKLIST, state.checklist),
+      storage.set(STORAGE_KEYS.JOURNALS, state.journals),
+      storage.set(STORAGE_KEYS.CURRENT_CURRENCY, state.displayCurrency)
+    ])
+    console.log('[TravelStore] All data saved to storage')
+  },
 
   addPlace: (place) => {
     console.log('[TravelStore] Adding place:', place.name)
+    const newPlace = {
+      ...place,
+      id: `place-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    }
     set((state) => ({
-      places: [
-        {
-          ...place,
-          id: `place-${Date.now()}`,
-          createdAt: new Date().toISOString()
-        },
-        ...state.places
-      ]
+      places: [newPlace, ...state.places]
     }))
+    get().saveAll()
+  },
+
+  updatePlace: (id, updates) => {
+    console.log('[TravelStore] Updating place:', id, updates)
+    set((state) => ({
+      places: state.places.map((p) =>
+        p.id === id ? { ...p, ...updates } : p
+      )
+    }))
+    get().saveAll()
   },
 
   removePlace: (id) => {
@@ -73,6 +174,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     set((state) => ({
       places: state.places.filter((p) => p.id !== id)
     }))
+    get().saveAll()
   },
 
   setPlaceCategory: (category) => {
@@ -87,6 +189,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
       itinerary: [...state.itinerary, newItem]
     }))
     get().checkConflicts(item.date)
+    get().saveAll()
   },
 
   removeItineraryItem: (id) => {
@@ -98,6 +201,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     if (item) {
       get().checkConflicts(item.date)
     }
+    get().saveAll()
   },
 
   updateItineraryItem: (id, updates) => {
@@ -111,6 +215,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     if (item) {
       get().checkConflicts(item.date)
     }
+    get().saveAll()
   },
 
   reorderItinerary: (date, timeSlot, items) => {
@@ -122,6 +227,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
       return { itinerary: [...otherItems, ...items] }
     })
     get().checkConflicts(date)
+    get().saveAll()
   },
 
   setSelectedDate: (date) => {
@@ -159,6 +265,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
         spent: state.budget.spent + expense.amount
       }
     }))
+    get().saveAll()
   },
 
   removeExpense: (id) => {
@@ -171,6 +278,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
         spent: expense ? state.budget.spent - expense.amount : state.budget.spent
       }
     }))
+    get().saveAll()
   },
 
   setBudget: (total, currency) => {
@@ -178,6 +286,13 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     set((state) => ({
       budget: { ...state.budget, total, currency }
     }))
+    get().saveAll()
+  },
+
+  setDisplayCurrency: (currency) => {
+    console.log('[TravelStore] Setting display currency:', currency)
+    set({ displayCurrency: currency })
+    get().saveAll()
   },
 
   addChecklistItem: (item) => {
@@ -185,6 +300,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     set((state) => ({
       checklist: [{ ...item, id: `checklist-${Date.now()}` }, ...state.checklist]
     }))
+    get().saveAll()
   },
 
   removeChecklistItem: (id) => {
@@ -192,6 +308,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     set((state) => ({
       checklist: state.checklist.filter((i) => i.id !== id)
     }))
+    get().saveAll()
   },
 
   toggleChecklistItem: (id) => {
@@ -201,6 +318,7 @@ export const useTravelStore = create<TravelState>((set, get) => ({
         i.id === id ? { ...i, checked: !i.checked } : i
       )
     }))
+    get().saveAll()
   },
 
   addJournal: (journal) => {
@@ -208,6 +326,17 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     set((state) => ({
       journals: [{ ...journal, id: `journal-${Date.now()}` }, ...state.journals]
     }))
+    get().saveAll()
+  },
+
+  updateJournal: (id, updates) => {
+    console.log('[TravelStore] Updating journal:', id, updates)
+    set((state) => ({
+      journals: state.journals.map((j) =>
+        j.id === id ? { ...j, ...updates } : j
+      )
+    }))
+    get().saveAll()
   },
 
   removeJournal: (id) => {
@@ -215,5 +344,29 @@ export const useTravelStore = create<TravelState>((set, get) => ({
     set((state) => ({
       journals: state.journals.filter((j) => j.id !== id)
     }))
+    get().saveAll()
+  },
+
+  clearAllData: async () => {
+    console.log('[TravelStore] Clearing all data')
+    await Promise.all([
+      storage.remove(STORAGE_KEYS.PLACES),
+      storage.remove(STORAGE_KEYS.ITINERARY),
+      storage.remove(STORAGE_KEYS.EXPENSES),
+      storage.remove(STORAGE_KEYS.BUDGET),
+      storage.remove(STORAGE_KEYS.CHECKLIST),
+      storage.remove(STORAGE_KEYS.JOURNALS),
+      storage.remove(STORAGE_KEYS.HAS_DATA),
+      storage.remove(STORAGE_KEYS.CURRENT_CURRENCY)
+    ])
+    set({
+      places: [],
+      itinerary: [],
+      expenses: [],
+      budget: { total: 10000, currency: 'CNY', spent: 0 },
+      checklist: [],
+      journals: [],
+      isInitialized: false
+    })
   }
 }))

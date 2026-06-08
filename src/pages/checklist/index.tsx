@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { View, Text, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import classnames from 'classnames'
 import styles from './index.module.scss'
 import { useTravelStore } from '@/store/travelStore'
-import { mockChecklist } from '@/data/mockChecklist'
 import ChecklistItemComponent from '@/components/ChecklistItem'
 import type { ChecklistCategory } from '@/types/travel'
 
@@ -31,24 +30,7 @@ const ChecklistPage: React.FC = () => {
     toggleChecklistItem
   } = useTravelStore()
 
-  const [isInitialized, setIsInitialized] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<ChecklistCategory | 'all'>('all')
-
-  useEffect(() => {
-    if (!isInitialized && checklist.length === 0) {
-      console.log('[ChecklistPage] Initializing with mock data')
-      mockChecklist.forEach((item) => {
-        addChecklistItem({
-          name: item.name,
-          category: item.category,
-          checked: item.checked,
-          quantity: item.quantity,
-          note: item.note
-        })
-      })
-      setIsInitialized(true)
-    }
-  }, [isInitialized, checklist.length, addChecklistItem])
 
   const overallProgress = useMemo(() => {
     if (checklist.length === 0) return { checked: 0, total: 0, percent: 0 }

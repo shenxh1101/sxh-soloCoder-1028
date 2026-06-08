@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { View, Text, ScrollView, Button } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import styles from './index.module.scss'
 import { useTravelStore } from '@/store/travelStore'
-import { mockJournals } from '@/data/mockJournals'
 import JournalCard from '@/components/JournalCard'
+import { convertCurrency, formatCurrency } from '@/utils/currency'
 import dayjs from 'dayjs'
 
 const weekdayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
@@ -13,32 +13,14 @@ const JournalPage: React.FC = () => {
   const {
     journals,
     budget,
-    addJournal,
+    expenses,
+    displayCurrency,
     removeJournal
   } = useTravelStore()
 
-  const [isInitialized, setIsInitialized] = useState(false)
-
-  useEffect(() => {
-    if (!isInitialized && journals.length === 0) {
-      console.log('[JournalPage] Initializing with mock data')
-      mockJournals.forEach((journal) => {
-        addJournal({
-          date: journal.date,
-          title: journal.title,
-          content: journal.content,
-          images: journal.images,
-          location: journal.location,
-          rating: journal.rating,
-          latitude: journal.latitude,
-          longitude: journal.longitude,
-          weather: journal.weather,
-          mood: journal.mood
-        })
-      })
-      setIsInitialized(true)
-    }
-  }, [isInitialized, journals.length, addJournal])
+  const totalSpent = useMemo(() => {
+    return expenses.reduce((sum, e) => sum + convertCurrency(e.amount, e.currency, displayCurrency), 0)
+  }, [expenses, displayCurrency])
 
   const stats = useMemo(() => {
     const uniqueDates = new Set(journals.map((j) => j.date)).size
@@ -46,16 +28,16 @@ const JournalPage: React.FC = () => {
     const avgRating = journals.length > 0
       ? (journals.reduce((sum, j) => sum + j.rating, 0) / journals.length)
       : 0
-    const uniquePlaces = new Set(journals.map((j) => j.location)).size
+    const uniquePlaces = new Set(journals.map((j) => j.location).filter(Boolean)).size
 
     return {
       days: totalDays,
       entries: journals.length,
       avgRating: avgRating.toFixed(1),
       places: uniquePlaces,
-      totalSpent: budget.spent
+      totalSpent: formatCurrency(totalSpent, displayCurrency)
     }
-  }, [journals, budget])
+  }, [journals, totalSpent, displayCurrency])
 
   const groupedJournals = useMemo(() => {
     const groups: Record<string, typeof journals> = {}

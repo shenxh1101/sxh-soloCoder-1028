@@ -160,3 +160,260 @@
   color: $color-text-white;
   font-weight: $font-weight-bold;
 }
+
+.addSlotBtn {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: $spacing-sm;
+  background: rgba(255, 122, 69, 0.1);
+  border-radius: 24rpx;
+}
+
+.addSlotBtnIcon {
+  font-size: $font-size-lg;
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+}
+
+.cardWrapper {
+  position: relative;
+  margin-bottom: $spacing-md;
+}
+
+.reorderControls {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+  padding: $spacing-sm;
+  background: $color-bg-secondary;
+  border-radius: $radius-md;
+}
+
+.reorderBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm;
+  background: $color-bg-card;
+  border-radius: $radius-sm;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.95);
+    background: $color-bg-secondary;
+  }
+}
+
+.reorderBtnDisabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.reorderBtnIcon {
+  font-size: $font-size-lg;
+  color: $color-primary;
+}
+
+.reorderBtnText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.reorderBtnCancel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-sm;
+  background: $color-primary;
+  border-radius: $radius-sm;
+}
+
+.reorderBtnCancel .reorderBtnText {
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.modal {
+  width: 100%;
+  max-height: 85vh;
+  background: $color-bg-card;
+  border-radius: $radius-xl $radius-xl 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg $page-padding;
+  border-bottom: 1rpx solid $color-border-light;
+}
+
+.modalTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.modalClose {
+  font-size: 48rpx;
+  color: $color-text-tertiary;
+  line-height: 1;
+}
+
+.modalBody {
+  flex: 1;
+  padding: $spacing-lg $page-padding;
+}
+
+.formSection {
+  margin-bottom: $spacing-lg;
+}
+
+.formLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+  display: block;
+}
+
+.required {
+  color: $color-error;
+  margin-left: 4rpx;
+}
+
+.slotSelector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+}
+
+.slotOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-md;
+  background: $color-bg-secondary;
+  border-radius: $radius-md;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+}
+
+.slotOptionActive {
+  background: rgba(255, 122, 69, 0.1);
+  border-color: $color-primary;
+}
+
+.slotOptionIcon {
+  font-size: 40rpx;
+  margin-bottom: $spacing-xs;
+}
+
+.slotOptionText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.formItem {
+  margin-bottom: $spacing-md;
+}
+
+.formRow {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.formItemHalf {
+  flex: 1;
+}
+
+.formInput {
+  width: 100%;
+  height: 88rpx;
+  padding: 0 $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  background: $color-bg-secondary;
+  border-radius: $radius-md;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+
+  &:focus {
+    border-color: $color-primary;
+    background: $color-bg-card;
+  }
+}
+
+.timeHint {
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-top: $spacing-md;
+}
+
+.timeHintText {
+  font-size: $font-size-xs;
+  color: $color-warning;
+  line-height: 1.6;
+}
+
+.modalFooter {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: calc($spacing-lg + env(safe-area-inset-bottom));
+  border-top: 1rpx solid $color-border-light;
+}
+
+.btnCancel {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg-secondary;
+  border-radius: $radius-lg;
+}
+
+.btnCancelText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.btnSubmit {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  border-radius: $radius-lg;
+}
+
+.btnSubmitText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+}
