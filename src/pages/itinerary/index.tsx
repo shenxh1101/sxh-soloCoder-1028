@@ -255,29 +255,115 @@ const ItineraryPage: React.FC = () => {
     setFormData((prev) => ({ ...prev, [key]: value }))
   }
 
+  const handleSelectDate = (date: string) => {
+    setSelectedDate(date)
+    setShowOverview(false)
+  }
+
+  const handleToggleView = () => {
+    setShowOverview(!showOverview)
+  }
+
   return (
     <View className={styles.page}>
       <View className={styles.header}>
         <Text className={styles.pageTitle}>行程安排</Text>
-        <View className={styles.dateSelector}>
-          <View className={styles.dateNav} onClick={handlePrevDate}>
-            <Text className={styles.dateNavIcon}>‹</Text>
+        
+        <View className={styles.viewToggle}>
+          <View
+            className={classnames(
+              styles.toggleBtn,
+              showOverview && styles.toggleBtnActive
+            )}
+            onClick={() => setShowOverview(true)}
+          >
+            <Text className={styles.toggleBtnText}>日期总览</Text>
           </View>
-          <View className={styles.dateDisplay}>
-            <Text className={styles.currentDate}>
-              {currentDateObj.format('MM月DD日')}
-            </Text>
-            <Text className={styles.weekday}>
-              {weekdayNames[currentDateObj.day()]}
-            </Text>
-          </View>
-          <View className={styles.dateNav} onClick={handleNextDate}>
-            <Text className={styles.dateNavIcon}>›</Text>
+          <View
+            className={classnames(
+              styles.toggleBtn,
+              !showOverview && styles.toggleBtnActive
+            )}
+            onClick={() => setShowOverview(false)}
+          >
+            <Text className={styles.toggleBtnText}>当日详情</Text>
           </View>
         </View>
+
+        {!showOverview && (
+          <View className={styles.dateSelector}>
+            <View className={styles.dateNav} onClick={handlePrevDate}>
+              <Text className={styles.dateNavIcon}>‹</Text>
+            </View>
+            <View className={styles.dateDisplay}>
+              <Text className={styles.currentDate}>
+                {currentDateObj.format('MM月DD日')}
+              </Text>
+              <Text className={styles.weekday}>
+                {weekdayNames[currentDateObj.day()]}
+              </Text>
+            </View>
+            <View className={styles.dateNav} onClick={handleNextDate}>
+              <Text className={styles.dateNavIcon}>›</Text>
+            </View>
+          </View>
+        )}
       </View>
 
-      <ScrollView className={styles.timelineContainer} scrollY>
+      {showOverview ? (
+        <ScrollView className={styles.overviewContainer} scrollY>
+          {dayOverviews.length > 0 ? (
+            dayOverviews.map((day) => {
+              const dayObj = dayjs(day.date)
+              return (
+                <View
+                  key={day.date}
+                  className={classnames(
+                    styles.overviewCard,
+                    day.hasConflict && styles.overviewCardConflict
+                  )}
+                  onClick={() => handleSelectDate(day.date)}
+                >
+                  <View className={styles.overviewDateSection}>
+                    <Text className={styles.overviewMonth}>
+                      {dayObj.format('MM月')}
+                    </Text>
+                    <Text className={styles.overviewDay}>
+                      {dayObj.format('DD')}
+                    </Text>
+                    <Text className={styles.overviewWeekday}>
+                      {weekdayNames[dayObj.day()]}
+                    </Text>
+                  </View>
+                  <View className={styles.overviewContent}>
+                    <View className={styles.overviewTopRow}>
+                      <Text className={styles.overviewCount}>
+                        {day.count} 项行程
+                      </Text>
+                      {day.hasConflict && (
+                        <View className={styles.overviewConflictBadge}>
+                          <Text className={styles.overviewConflictText}>⚠️ 有冲突</Text>
+                        </View>
+                      )}
+                    </View>
+                    <Text className={styles.overviewTime}>
+                      {day.startTime} - {day.endTime}
+                    </Text>
+                  </View>
+                  <Text className={styles.overviewArrow}>›</Text>
+                </View>
+              )
+            })
+          ) : (
+            <View className={styles.emptyOverview}>
+              <Text className={styles.emptyOverviewIcon}>📅</Text>
+              <Text className={styles.emptyOverviewTitle}>暂无行程安排</Text>
+              <Text className={styles.emptyOverviewDesc}>点击右下角 + 添加第一条行程</Text>
+            </View>
+          )}
+        </ScrollView>
+      ) : (
+        <ScrollView className={styles.timelineContainer} scrollY>
         {hasConflict && (
           <View className={styles.conflictBanner}>
             <Text className={styles.conflictIcon}>⚠️</Text>
@@ -352,7 +438,8 @@ const ItineraryPage: React.FC = () => {
             </View>
           )
         })}
-      </ScrollView>
+        </ScrollView>
+      )}
 
       <View className={styles.fab} onClick={() => handleOpenAddModal()}>
         <Text className={styles.fabIcon}>+</Text>
